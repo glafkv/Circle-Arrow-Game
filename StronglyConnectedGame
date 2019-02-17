@@ -1,0 +1,130 @@
+program HW1appel;
+
+type
+  arrowType = array[1..10] of Boolean;
+  oneCircle = record
+        numOfChecks: Integer;  //to keep track of the number of checks
+        totalArrows: arrowType;  //keeps track of total arrows
+
+  end;
+  circleArray = array[1..10] of oneCircle;
+
+var
+   //Declaration of variables.
+   circles: circleArray;      //to call the array
+   {keep track of what is the current circle, how many circles, and how many arrows}
+   currentCircle, numOfCircles, numOfArrows: Integer;
+   //Are all the circles checked?
+   done: Boolean;
+   //Files
+   inputFile: text;
+   outputFile: text;
+   //Finding the certain circle, front part of arrow, total checks, and max checks
+   circleNum, arrowNum, totalChecks, max: Integer;
+   //For the average of checks
+   avgChecks: Double;
+   //FOR loop variables
+   i, j: Integer;
+
+begin
+     //My files I'm reading from and outputting to
+     Assign(inputFile, 'HW1infile.txt');
+     Assign(outputFile, 'HW1appelOutfile.txt');
+     reset(inputFile);
+     rewrite(outputFile);
+
+
+    //Read in the first two lines
+    read(inputFile, numOfCircles);
+    read(inputFile, numOfArrows);
+
+     //Loop to initialize the number of checks to 0
+     for i:= 1 to numOfCircles do
+     begin
+         circles[i].numOfChecks := 0;
+         //Loop to initialize the total number of arrows
+          for j:= 1 to numOfCircles do
+              circles[i].totalArrows[j] := false;
+     end;
+
+     //Read in circle num, total arrow num, and the back and front
+     //of the arrows.
+     while not EOF(inputFile) do
+     begin
+          readln(inputFile, circleNum, arrowNum);
+          circles[circleNum].totalArrows[arrowNum] := true;
+     end;
+
+     //Initialize done to false
+     done := false;
+     //Set currentCircle to 1
+     currentCircle := 1;
+     //Add a check to the current circle.
+     circles[currentCircle].numOfChecks:= circles[currentCircle].numOfChecks + 1;
+     //Needed for random
+     Randomize;
+     //While all the circles HAVEN'T been checked
+     while not done do
+     begin
+          //Random to pick which direction the arrow goes.
+          arrowNum := Random(numOfCircles)+1;
+
+          {Start at circle one, go to next, does it have more than one
+          arrow? yes, randomize to pick the next arrow}
+          while circles[currentCircle].totalArrows[arrowNum] = false do
+                arrowNum := Random(numOfCircles)+1;
+
+          //Current circle is now the front end of the arrow
+          currentCircle := arrowNum;
+          //Add a check mark to the new current circle
+          circles[currentCircle].numOfChecks:= circles[currentCircle].numOfChecks + 1;
+          //Check if all the circles are checked.
+          done := true;
+          //If not, do it again.
+          for i:= 1 to numOfCircles do
+              if circles[i].numOfChecks = 0 then
+                 done := false;
+     end;
+
+     //Print out number of circles and arrows to the outputfile.
+     Writeln(outputFile, 'Number of Circles: ', numOfCircles, ' circles');
+     Writeln(outputFile, 'Number of Arrows: ', numOfArrows, ' arrows');
+
+      //Initialize max and total checks.
+     max := 0;
+     totalChecks := 0;
+
+     for i:= 1 to numOfCircles do
+     begin
+          //Get the max amount of checks.
+          if circles[i].numOfChecks > max then
+             max := circles[i].numOfChecks;
+          //Add the checks from the circles together to get total checks
+          totalChecks := circles[i].numOfChecks + totalChecks;
+          //Divide number of circles from total checks to get an average
+          avgChecks := (totalChecks) / numOfCircles;
+     end;
+
+
+
+          //Print out to the output file.
+          Writeln(outputFile, 'Total Checks from all the Circles: ', totalChecks, ' checkmarks');
+          Writeln(outputFile, 'Average checks: ', avgChecks, ' checkmarks');
+          Writeln(outputFile, 'Max checks in One Circle: ', max, ' checkmarks');
+
+
+
+         //Don't forget to close your files
+          close(inputFile);
+          close(outputFile);
+
+            //Print out to the screen.
+          //I don't think it will stop running unless you hit stop.
+          Writeln('Number of Circles: ', numOfCircles, ' circles');
+          Writeln('Number of Arrows: ', numOfArrows, ' arrows');
+          Writeln('Total Checks from all the Circles: ', totalChecks, ' checkmarks');
+          Writeln('Average checks: ', avgChecks, ' checkmarks');
+          Writeln('Max checks in One Circle: ', max, ' checkmarks');
+          readln;
+
+end.      
