@@ -53,8 +53,11 @@ begin
      begin
           readln(inputFile, circleNum, arrowNum);
           circles[circleNum].totalArrows[arrowNum] := true;
+          arrowNum := arrowNum + 1;
      end;
-
+    if arrowNum = numOfArrows then
+    begin
+    
      //Initialize done to false
      done := false;
      //Set currentCircle to 1
@@ -126,5 +129,15 @@ begin
           Writeln('Average checks: ', avgChecks, ' checkmarks');
           Writeln('Max checks in One Circle: ', max, ' checkmarks');
           readln;
+      
+      end
+      else
+      begin
+           writeln(outputFile, 'Your file did not have enough back to front arrow pairs.');
+           close(outputFile);
+           
+           writeln('Your file did not have enough back to front arrow pairs.');
+           readln;
+      end;     
 
 end.      
